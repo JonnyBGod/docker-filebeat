@@ -35,6 +35,7 @@ Two environment variables are needed:
 
 Optional variables:
 * `INDEX`: to specify the elasticsearch index (default: filebeat) 
+* `LOG_LEVEL`: to specify the log level (default: error) 
 * `SHIPPER_NAME`: to specify the Filebeat shipper name (default: the container ID) 
 * `SHIPPER_TAGS`: to specify the Filebeat shipper tags
 

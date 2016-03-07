@@ -13,20 +13,11 @@ if [ "$1" = 'start' ]; then
   }
 
   getRunningContainers() {
-    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/json | python -c "
-import json, sys
-containers=json.loads(sys.stdin.readline())
-for container in containers:
-  print(container['Id'])
-"
+    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/json | ./jq '.[].Id'
   }
 
   getContainerName() {
-    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/$1/json | python -c "
-import json, sys
-container=json.loads(sys.stdin.readline())
-print(container['Name'])
-" | sed 's;/;;'
+    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/$1/json | ./jq '.Name' | sed 's;/;;'
   }
 
   createContainerFile() {
@@ -62,6 +53,7 @@ print(container['Name'])
   fi
 
   sed -i "s#{{INDEX}}#${INDEX:-filebeat}#g" ${FILEBEAT_HOME}/filebeat.yml
+  sed -i "s#{{LOG_LEVEL}}#${LOG_LEVEL:-error}#g" ${FILEBEAT_HOME}/filebeat.yml
   sed -i "s#{{SHIPPER_NAME}}#${SHIPPER_NAME:-`hostname`}#g" ${FILEBEAT_HOME}/filebeat.yml
   sed -i "s#{{SHIPPER_TAGS}}#${SHIPPER_TAGS}#g" ${FILEBEAT_HOME}/filebeat.yml
 

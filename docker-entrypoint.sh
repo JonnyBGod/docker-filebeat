@@ -13,11 +13,11 @@ if [ "$1" = 'start' ]; then
   }
 
   getRunningContainers() {
-    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/json | ./jq '.[].Id'
+    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/json | jq '.[].Id'
   }
 
   getContainerName() {
-    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/$1/json | ./jq '.Name' | sed 's;/;;'
+    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/$1/json | jq '.Name' | sed 's;/;;'
   }
 
   createContainerFile() {
@@ -52,9 +52,9 @@ if [ "$1" = 'start' ]; then
     exit 1
   fi
 
-  sed -i "s#{{INDEX}}#${INDEX:-filebeat}#g" ${FILEBEAT_HOME}/filebeat.yml
-  sed -i "s#{{LOG_LEVEL}}#${LOG_LEVEL:-error}#g" ${FILEBEAT_HOME}/filebeat.yml
-  sed -i "s#{{SHIPPER_NAME}}#${SHIPPER_NAME:-`hostname`}#g" ${FILEBEAT_HOME}/filebeat.yml
+  sed -i "s#{{INDEX}}#${INDEX:=filebeat}#g" ${FILEBEAT_HOME}/filebeat.yml
+  sed -i "s#{{LOG_LEVEL}}#${LOG_LEVEL:=error}#g" ${FILEBEAT_HOME}/filebeat.yml
+  sed -i "s#{{SHIPPER_NAME}}#${SHIPPER_NAME:=`hostname`}#g" ${FILEBEAT_HOME}/filebeat.yml
   sed -i "s#{{SHIPPER_TAGS}}#${SHIPPER_TAGS}#g" ${FILEBEAT_HOME}/filebeat.yml
 
   rm -rf "$CONTAINERS_FOLDER"
@@ -66,13 +66,13 @@ if [ "$1" = 'start' ]; then
   cat $NAMED_PIPE | ${FILEBEAT_HOME}/filebeat -e &
 
   while true; do
-    CONTAINERS=`getRunningContainers`
+    CONTAINERS=`getRunningContainers` && :
     for CONTAINER in $CONTAINERS; do
       if ! ls $CONTAINERS_FOLDER | grep -q $CONTAINER; then
         collectContainerLogs $CONTAINER &
       fi
     done
-    sleep ${PERIOD}
+    sleep ${PERIOD:=5}
   done
 
 else

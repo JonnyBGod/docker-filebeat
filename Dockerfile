@@ -15,7 +15,7 @@ WORKDIR /opt/
 
 RUN apk add --no-cache curl
 
-RUN wget http://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O jq && chmod +x jq
+RUN wget http://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /bin/jq && chmod +x /bin/jq
 
 RUN curl -sL https://download.elastic.co/beats/filebeat/${FILENAME} | tar xz -C .
 

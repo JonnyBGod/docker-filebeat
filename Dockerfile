@@ -13,11 +13,9 @@ ENV PATH $PATH:${FILEBEAT_HOME}
 
 WORKDIR /opt/
 
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl jq
 
-RUN wget http://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /bin/jq && chmod +x /bin/jq
-
-RUN curl -sL https://download.elastic.co/beats/filebeat/${FILENAME} | tar xz -C .
+RUN wget -q -O - http://download.elastic.co/beats/filebeat/${FILENAME} | tar xz -C .
 
 ADD filebeat.yml ${FILEBEAT_HOME}/filebeat.yml
 ADD docker-entrypoint.sh /entrypoint.sh

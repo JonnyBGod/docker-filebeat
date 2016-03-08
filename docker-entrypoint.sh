@@ -13,11 +13,11 @@ if [ "$1" = 'start' ]; then
   }
 
   getRunningContainers() {
-    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/json | jq '.[].Id'
+    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http:/containers/json | jq '.[].Id'
   }
 
   getContainerName() {
-    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http://containers/$1/json | jq '.Name' | sed 's;/;;'
+    curl --no-buffer -s -XGET --unix-socket /var/run/docker.sock http:/containers/$1/json | jq '.Name' | sed 's;/;;'
   }
 
   createContainerFile() {
@@ -33,7 +33,7 @@ if [ "$1" = 'start' ]; then
     echo "Processing $CONTAINER..."
     createContainerFile $CONTAINER
     CONTAINER_NAME=`getContainerName $CONTAINER`
-    curl -s --no-buffer -XGET --unix-socket /var/run/docker.sock "http://containers/$CONTAINER/logs?stderr=1&stdout=1&tail=1&follow=1" | sed "s;^;[$CONTAINER_NAME] ;" > $NAMED_PIPE
+    curl -s --no-buffer -XGET --unix-socket /var/run/docker.sock "http:/containers/$CONTAINER/logs?stderr=1&stdout=1&tail=1&follow=1" | sed "s;^;[$CONTAINER_NAME] ;" > $NAMED_PIPE
     echo "Disconnected from $CONTAINER."
     removeContainerFile $CONTAINER
   }

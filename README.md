@@ -73,8 +73,12 @@ filter {
 
     grok {
       match => { 
-        "message" => "\[%{WORD:containerName}\] %{GREEDYDATA:message_remainder}"
+        "message" => "\[%{WORD:containerName}\] (\[%{WORD:logtype}\])? %{TIMESTAMP_ISO8601:time} %{GREEDYDATA:message_remainder}"
       }
+    }
+    
+    date { 
+      match => [ "time", "ISO8601"]
     }
 
     mutate {
